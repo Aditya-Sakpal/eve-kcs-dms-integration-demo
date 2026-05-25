@@ -7,7 +7,11 @@ import type { AuthSession, TenantInventory } from "../types";
 //   POST /api/dms/mcp/    notifications/initialized
 //   POST /api/dms/mcp/    tools/call          -> SSE-wrapped JSON result
 
-const DMS_MCP_URL = "/api/dms/mcp/";
+// Trailing slash intentionally omitted: Vercel's edge rewrite normalises trailing
+// slashes off `/api/:path*` before matching, so "/api/dms/mcp/" hits Vercel's own
+// 404 page before reaching APISIX. The upstream APISIX route accepts both forms
+// and forwards correctly to FastMCP's actual `/mcp/` mount.
+const DMS_MCP_URL = "/api/dms/mcp";
 
 async function initSession(token: string): Promise<string> {
   const initBody = {
