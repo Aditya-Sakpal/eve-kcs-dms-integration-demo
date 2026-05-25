@@ -1,6 +1,10 @@
 {
-  "_comment": "/api/dms-mcp is handled by the Edge Function at api/dms-mcp.ts (the filesystem check runs before rewrites, so the function wins). Everything else under /api/* gets edge-rewritten straight to dev.api.eveaix.com.",
+  "_comment": "Rewrites run BEFORE filesystem on Vercel — without the no-op first rule, the /api/:path* catch-all swallows /api/dms-mcp and proxies it to the upstream as a non-existent /dms-mcp route. The no-op leaves the URL unchanged so the Edge Function at api/dms-mcp.ts gets to handle it.",
   "rewrites": [
+    {
+      "source": "/api/dms-mcp",
+      "destination": "/api/dms-mcp"
+    },
     {
       "source": "/api/:path*",
       "destination": "https://dev.api.eveaix.com/:path*"
