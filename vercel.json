@@ -1,6 +1,11 @@
 {
   "rewrites": [
     {
+      "_comment": "Vercel strips trailing slashes from :path* before matching, so `/api/dms/mcp/` 404s at the edge. But the FastMCP-mounted route upstream requires the trailing slash — without it APISIX returns a 307 redirect to http://dev.api.eveaix.com/mcp/ (wrong path + mixed-content). Explicit rule: client sends /api/dms/mcp (no slash, Vercel-friendly), edge proxies to /dms/mcp/ (with slash, FastMCP-friendly).",
+      "source": "/api/dms/mcp",
+      "destination": "https://dev.api.eveaix.com/dms/mcp/"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://dev.api.eveaix.com/:path*"
     }
