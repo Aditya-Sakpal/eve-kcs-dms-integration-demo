@@ -1,5 +1,4 @@
 {
-  "_comment": "Proxy login + KCS chat to dev.api.eveaix.com. DMS MCP is called directly from the browser (APISIX has CORS=*) so no rewrite is needed for it.",
   "rewrites": [
     {
       "source": "/api/core-tenant/:path*",
