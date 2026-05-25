@@ -7,12 +7,15 @@ import type { AuthSession, TenantInventory } from "../types";
 //   POST /api/dms/mcp/    notifications/initialized
 //   POST /api/dms/mcp/    tools/call          -> SSE-wrapped JSON result
 
-// In dev (Vite), /api/dms-mcp is proxied straight to dev.api.eveaix.com/dms/mcp/
-// via the rewrite in vite.config.ts. In production (Vercel), the same path hits
-// the Edge Function at /api/dms-mcp.ts which forwards to the upstream URL with
-// the trailing slash preserved — Vercel's built-in rewrite layer drops it,
-// causing FastMCP to issue a 307 redirect that the browser blocks.
-const DMS_MCP_URL = "/api/dms-mcp";
+// DMS is called DIRECTLY from the browser, bypassing the Vercel proxy.
+// APISIX returns `Access-Control-Allow-Origin: *` on this route (verified via
+// OPTIONS preflight) so cross-origin POSTs from any host are allowed. This
+// sidesteps two Vercel quirks at once:
+//   1. Edge rewrite strips trailing slash off destination → FastMCP 307s
+//   2. Adding an Edge Function at /api/dms-mcp.* caused deploys to fail
+// Login + KCS keep using the Vercel proxy (/api/core-tenant/*, /api/kcs/*)
+// because those paths don't depend on a trailing slash.
+const DMS_MCP_URL = "https://dev.api.eveaix.com/dms/mcp/";
 
 async function initSession(token: string): Promise<string> {
   const initBody = {

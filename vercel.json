@@ -1,5 +1,5 @@
 {
-  "_comment": "Explicitly proxy only the upstream paths we use. /api/dms-mcp is deliberately omitted so it falls through to the Edge Function at api/dms-mcp.ts. A catch-all /api/:path* would shadow the function (rewrites run before filesystem on Vercel) so we avoid one entirely.",
+  "_comment": "Proxy login + KCS chat to dev.api.eveaix.com. DMS MCP is called directly from the browser (APISIX has CORS=*) so no rewrite is needed for it.",
   "rewrites": [
     {
       "source": "/api/core-tenant/:path*",
