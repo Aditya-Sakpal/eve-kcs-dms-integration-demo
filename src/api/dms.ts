@@ -7,11 +7,12 @@ import type { AuthSession, TenantInventory } from "../types";
 //   POST /api/dms/mcp/    notifications/initialized
 //   POST /api/dms/mcp/    tools/call          -> SSE-wrapped JSON result
 
-// Trailing slash intentionally omitted: Vercel's edge rewrite normalises trailing
-// slashes off `/api/:path*` before matching, so "/api/dms/mcp/" hits Vercel's own
-// 404 page before reaching APISIX. The upstream APISIX route accepts both forms
-// and forwards correctly to FastMCP's actual `/mcp/` mount.
-const DMS_MCP_URL = "/api/dms/mcp";
+// In dev (Vite), /api/dms-mcp is proxied straight to dev.api.eveaix.com/dms/mcp/
+// via the rewrite in vite.config.ts. In production (Vercel), the same path hits
+// the Edge Function at /api/dms-mcp.ts which forwards to the upstream URL with
+// the trailing slash preserved — Vercel's built-in rewrite layer drops it,
+// causing FastMCP to issue a 307 redirect that the browser blocks.
+const DMS_MCP_URL = "/api/dms-mcp";
 
 async function initSession(token: string): Promise<string> {
   const initBody = {
